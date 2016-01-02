@@ -1,0 +1,15 @@
+<html>
+<head>
+<title>
+Battleship Game
+</title>
+</head>
+<body>
+<h1> Play Battleship...
+<p>
+smoke down all three enemy ships before they launch an assault on our country!
+</p>
+<script src ="C:\Users\Dark Lord\Desktop\battleship.js">
+</script>
+</body>
+</html>
