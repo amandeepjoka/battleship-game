@@ -1,57 +1,136 @@
-// Battle ship game using simple seven slots...
-function init(){
-var location1 = Math.floor(Math.random()*5);           // setting up counter and control units
-var location2 = location1 + 1;
-var location3 = location2 + 1;
-var isDown = false;  
-var guess;
-var guesses = 0;
-var hits = 0;
-while (isDown == false)    // here begins the game engine design....
-{
- guess =  prompt("ready , aim , smoke em up! (enter a number within 0-6)");   // user interaction for input...
- if (guess < 0 || guess > 6)                  // checking validity of input...
- { alert("shoot the ships idiot!");
- }
- else                       // impact analysis of input...
- {
-   guesses += 1;
-   if (guess == location1)
-   { 
-     hits += 1;
-     alert("target neutralized....nice job rookie! now blow the rest of em.");
-     location1 = null;
-   }
-   if (guess == location2)
-   { 
-     hits += 1;
-     alert("target neutralized....nice job rookie! now blow the rest of em.");
-     location2 = null;
-   }
-   if (guess == location3)
-   { 
-     hits += 1;
-     alert("target neutralized....nice job rookie! now blow the rest of em.");
-     location3 = null;
-   }
- }
- if (hits == 3)           // stopping the gaming engine...
-  {
-   isDown = true;
-   alert("all ships down to hell......good work comerade");
-  }
-  
-} 
+var view = {
 
-alert("shots taken...."+guesses );      // aftermath and stats...
-alert("accuracy :"+(guesses/3));
-if (guesses <= 4 )
-{
- alert("you owned them!");
-} 
-else
-{
- alert("nice try , though.....it could have been better")
+  displayMiss : function(location) {                                        
+    var locationMiss = document.getElementById(location);
+    locationMiss.setAttribute("class","miss");
+  } ,//displays a miss 
+
+
+  displayHit : function(location) {
+    var locationHit = document.getElementById(location);
+    locationHit.setAttribute("class","hit");
+  } ,//displays hit on the board
+
+
+   displayMessage : function(msg) {
+     var messageArea = document.getElementById("messageArea");
+     messageArea.innerHTML = msg;
+   }  //displays string message in display area
+
+};
+
+var model = {
+   boardSize : 7,
+  numShips : 3,
+  shipLength : 3,
+  shipSunk : 0,
+  ships : [
+  {locations : ["10","20","30"],
+    hits : ["","",""]} , 
+  {  locations : ["32","33","34"],
+  hits : ["","",""]} , 
+   {locations : ["63","64","65"],
+   hits : ["","",""]}
+   ],
+  fire : function(guess){
+    for (var i=0; i<this.numShips ; i++ ) {
+      var ship = this.ships[i];
+      var locations = ship.locations;
+      var index = locations.indexOf(guess);
+      if (index >=0){
+        ship.hits[index]="hit";
+        view.displayHit(guess);
+        view.displayMessage("you got one of them......");
+        if (this.isSunk(ship)){
+          view.displayMessage("target neutralized")
+          this.shipsSunk++;
+        }
+        return true;
+      }
+    }
+    view.displayMiss(guess);
+    view.displayMessage("you missed...try harder");
+    return false;
+  },
+  isSunk : function(ship){
+    for(var i =0; i<this.shipLength;i++)
+      {
+        if (ship.hits[i] !== "hit"){return false;}
+      }
+    return true;
+  }
+};
+
+var controller = {
+	guesses: 0,
+
+	processGuess: function(guess) {
+		var location = parseGuess(guess);
+		if (location) {
+			this.guesses++;
+			var hit = model.fire(location);
+			if (hit && model.shipsSunk === model.numShips) {
+					view.displayMessage("You sank all my battleships, in " + this.guesses + " 
+
+guesses");
+			}
+		}
+	}
 }
+
+
+// helper function to parse a guess from the user
+
+function parseGuess(guess) {
+	var alphabet = ["A", "B", "C", "D", "E", "F", "G"];
+
+	if (guess === null || guess.length !== 2) {
+		alert("Oops, please enter a letter and a number on the board.");
+	} else {
+		var firstChar = guess.charAt(0);
+		var row = alphabet.indexOf(firstChar);
+		var column = guess.charAt(1);
+		
+		if (isNaN(row) || isNaN(column)) {
+			alert("Oops, that isn't on the board.");
+		} else if (row < 0 || row >= model.boardSize ||
+		           column < 0 || column >= model.boardSize) {
+			alert("Oops, that's off the board!");
+		} else {
+			return row + column;
+		}
+	}
+	return null;
+}
+
+
+// event handlers
+
+function handleFireButton() {
+	var guessInput = document.getElementById("guessInput");
+	var guess = guessInput.value.toUpperCase();
+
+	controller.processGuess(guess);
+
+	guessInput.value = "";
 }
 window.onload = init;
+
+function init() {
+	// Fire! button onclick handler
+	var fireButton = document.getElementById("fireButton");
+	fireButton.onclick = handleFireButton;
+
+	// handle "return" key press
+	var guessInput = document.getElementById("guessInput");
+	guessInput.onkeypress = handleKeyPress;
+}
+function handleKeypress(e)
+{
+var fireButton = document.getElementById("fireButton");
+if (e.keyCode === 13)
+{
+fireButton.click();
+return false
+}
+}
