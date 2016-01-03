@@ -70,9 +70,7 @@ var controller = {
 			this.guesses++;
 			var hit = model.fire(location);
 			if (hit && model.shipsSunk === model.numShips) {
-					view.displayMessage("You sank all my battleships, in " + this.guesses + " 
-
-guesses");
+					view.displayMessage("You sank all my battleships, in " + this.guesses + " guesses");
 			}
 		}
 	}
@@ -117,19 +115,14 @@ function handleFireButton() {
 window.onload = init;
 
 function init() {
-	// Fire! button onclick handler
-	var fireButton = document.getElementById("fireButton");
-	fireButton.onclick = handleFireButton;
-
-	// handle "return" key press
-	var guessInput = document.getElementById("guessInput");
-	guessInput.onkeypress = handleKeyPress;
-}
-function handleKeypress(e)
-{
 var fireButton = document.getElementById("fireButton");
-if (e.keyCode === 13)
-{
+fireButton.onclick = handleFireButton;
+var guessInput = document.getElementById("guessInput");
+guessInput.onkeypress = handleKeyPress;
+}
+function handleKeyPress(e) {
+var fireButton = document.getElementById("fireButton");
+if (e.keyCode === 13) {
 fireButton.click();
 return false;
 }
